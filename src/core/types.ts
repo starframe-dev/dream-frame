@@ -229,6 +229,5 @@ export interface NamespaceState {
     snapshot: SceneSnapshot | null
     activeCommands: Map<string, Command>
     activeCommandCount: number
-    latestScreenshot?: Screenshot
 }
 

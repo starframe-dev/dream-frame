@@ -127,7 +127,7 @@ Controller может подписаться на `snapshots` (получать 
 
 ### putResult / putScreenshot (source)
 
-Source публикует результат обработки команды и PNG, связывая оба сообщения по `requestId`. Controller подписывается на `results` и `screenshots`; `commandAndWait` ждёт только результат, а `commandAndCapture` ждёт результат и соответствующий screenshot.
+Source публикует результат обработки команды и PNG, связывая оба сообщения по `requestId`. Если source создан с `captureScreenshot`, он сам отправляет `putScreenshot` после обработки любой команды с `requestId` (включая `action: 'screenshot'`), причём кадр снимается после вызова обработчиков `onCommand`. Controller подписывается на `results` и `screenshots`; `commandAndWait` ждёт только результат, а `commandAndCapture` ждёт результат и соответствующий screenshot.
 
 ## Namespace isolation
 

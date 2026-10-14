@@ -142,7 +142,11 @@ async function runScreenshot(): Promise<void> {
     const controller = new DreamFrameController({ namespace: opts.namespace, url: resolveUrl(opts.slug, opts.url) })
     try {
         await controller.connect()
-        const screenshot = await controller.screenshot()
+        const screenshot = await controller.screenshot().catch((error: unknown) => {
+            throw new Error(
+                `${errMessage(error)}. Screenshot needs a browser DreamFrameSource with captureScreenshot connected to this namespace.`
+            )
+        })
         writeScreenshot(output, screenshot)
         console.log(JSON.stringify({ output, mimeType: screenshot.mimeType, width: screenshot.width, height: screenshot.height }))
     } finally {

@@ -45,6 +45,7 @@ export class DreamFrameSource {
     private resolveReady?: () => void
     private rejectReady?: (err: Error) => void
     private role: Role | null = null
+    private registrationTimer?: ReturnType<typeof setTimeout>
 
     constructor(options: DreamFrameSourceOptions) {
         this.namespace = options.namespace
@@ -81,8 +82,8 @@ export class DreamFrameSource {
                 this.rejectPending(new Error('WebSocket error'))
             }
 
-            // Safety timeout.
-            setTimeout(() => {
+            // Safety timeout, cleared once registration succeeds.
+            this.registrationTimer = setTimeout(() => {
                 if (this.role !== 'source') {
                     this.rejectPending(new Error('Registration timeout'))
                 }
@@ -145,6 +146,8 @@ export class DreamFrameSource {
 
         if (message.type === 'ready') {
             this.role = message.role as Role
+            clearTimeout(this.registrationTimer)
+            this.registrationTimer = undefined
             this.resolveReady?.()
             this.resolveReady = undefined
             this.rejectReady = undefined
@@ -159,17 +162,18 @@ export class DreamFrameSource {
 
         if (message.type === 'command') {
             const cmd = message.cmd as Command
-            if (cmd.payload.action === 'screenshot') {
-                void this.captureAndSendScreenshot(cmd).catch((error: unknown) => {
-                    console.error('[dream-frame] screenshot failed:', error)
-                })
-            }
             for (const handler of this.handlers) {
                 try {
                     handler(cmd)
                 } catch {
                     // ignore handler errors
                 }
+            }
+            // Capture after handlers ran, so the frame reflects the command.
+            if (this.captureScreenshot && this.isScreenshotRequest(cmd)) {
+                void this.captureAndSendScreenshot(cmd).catch((error: unknown) => {
+                    console.error('[dream-frame] screenshot failed:', error)
+                })
             }
             return
         }
@@ -178,6 +182,11 @@ export class DreamFrameSource {
             // Source can optionally react; no built-in default behavior.
             return
         }
+    }
+
+    /** A command requests a frame when it is a `screenshot` action or carries a `requestId` (commandAndCapture). */
+    private isScreenshotRequest(cmd: Command): boolean {
+        return cmd.payload.action === 'screenshot' || typeof cmd.payload.requestId === 'string'
     }
 
     private async captureAndSendScreenshot(cmd: Command): Promise<void> {

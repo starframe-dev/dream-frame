@@ -23,3 +23,11 @@
 ### Проблема: source получал собственный `change`
 - Изначально `broadcastMessage` всегда слал сообщения активному source.
 - Решение: `broadcastSnapshotChange` исключает source; `broadcastCommand` и `commandCleared` включают source. Source по умолчанию подписан только на `commands`.
+
+### Проблема: commandAndCapture ждал скриншот, который source не присылал для custom action
+- Причина: автоснимок срабатывал только для `action: 'screenshot'`.
+- Решение: снимок делается после обработчиков для любой команды с `requestId` или `action: 'screenshot'`, если задан `captureScreenshot`.
+
+### Проблема: скриншот и таймер регистрации
+- `latestScreenshot` хранился в памяти без нужды → удалён из store/types.
+- Таймер регистрации не очищался → очищается при `ready`.

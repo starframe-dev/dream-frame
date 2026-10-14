@@ -19,7 +19,6 @@ import type {
 interface NamespaceRuntime {
     snapshot: SceneSnapshot | null
     activeCommands: Map<string, Command>
-    latestScreenshot?: Screenshot
     /** Single active source sink (graceful takeover replaces it). */
     source?: MessageSink
     controllers: Set<MessageSink>
@@ -44,7 +43,6 @@ export class NamespaceStore {
             runtime = {
                 snapshot: null,
                 activeCommands: new Map(),
-                latestScreenshot: undefined,
                 controllers: new Set(),
                 subscriptions: new Map(),
             }
@@ -61,7 +59,6 @@ export class NamespaceStore {
             snapshot: runtime.snapshot,
             activeCommands: new Map(runtime.activeCommands),
             activeCommandCount: runtime.activeCommands.size,
-            latestScreenshot: runtime.latestScreenshot,
         }
     }
 
@@ -161,7 +158,6 @@ export class NamespaceStore {
         if (runtime.source !== sourceSink) {
             throw new Error('Only the active source can put a screenshot')
         }
-        runtime.latestScreenshot = screenshot
         this.broadcastMessage(runtime, 'screenshots', {
             type: 'screenshot',
             requestId,
