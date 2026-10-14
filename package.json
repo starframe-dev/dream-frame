@@ -1,0 +1,62 @@
+{
+    "name": "@starframe/dream-frame",
+    "version": "0.2.0",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./core": {
+            "import": "./dist/core/index.js",
+            "types": "./dist/core/index.d.ts"
+        },
+        "./core/serializer": {
+            "import": "./dist/core/serializer.js",
+            "types": "./dist/core/serializer.d.ts"
+        },
+        "./core/types": {
+            "import": "./dist/core/types.js",
+            "types": "./dist/core/types.d.ts"
+        },
+        "./browser": {
+            "import": "./dist/browser.js",
+            "types": "./dist/browser.d.ts"
+        },
+        "./server": {
+            "import": "./dist/server/index.js",
+            "types": "./dist/server/index.d.ts"
+        },
+        "./client": {
+            "import": "./dist/client/index.js",
+            "types": "./dist/client/index.d.ts"
+        },
+        "./client/source": {
+            "import": "./dist/client/source.js",
+            "types": "./dist/client/source.d.ts"
+        }
+    },
+    "scripts": {
+        "clean": "rm -rf dist",
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "test": "vitest run",
+        "test:watch": "vitest"
+    },
+    "bin": {
+        "dream-frame": "dist/client/cli.js"
+    },
+    "dependencies": {
+        "three": "^0.175.0",
+        "ws": "^8.18.0"
+    },
+    "devDependencies": {
+        "@types/node": "^22.20.1",
+        "@types/three": "^0.175.0",
+        "@types/ws": "^8.5.13",
+        "typescript": "^5.7.0",
+        "vitest": "^2.1.0"
+    }
+}
