@@ -12,6 +12,10 @@
 - `DreamFrameSource` ожидал строго `globalThis.WebSocket`, что ломало CLI с `ws`.
 - Решение: обновить `types.ts`, добавить импорт `ErrorCode`, ввести `WebSocketLike`/`WebSocketCtorLike` для универсального конструктора WebSocket.
 
+### Проблема: чистый клон падал с ERR_PNPM_IGNORED_BUILDS (esbuild)
+- Причина: локально `node_modules` уже была, поэтому ошибка не проявлялась; в git не было разрешения сборки esbuild.
+- Решение: `pnpm-workspace.yaml` с `allowBuilds: { esbuild: true }`. Проверено на чистом клоне: install, build, test — OK.
+
 ### Проблема: гонки сообщений в интеграционных тестах
 - `register` удалял слушатель до получения начального `snapshot`, поэтому `nextMessage` иногда теряла сообщения.
 - Решение: заменить хелперы на `MsgSocket` с внутренней очередью и единственным обработчиком `message`, не дублирующим события.
